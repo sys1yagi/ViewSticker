@@ -48,17 +48,51 @@ public class ViewSticker {
 
     private final static Map<View, Closure> sObjectMap = new HashMap<View, Closure>();
 
-    private static ViewGroup wrap(final View target) {
+    private static ViewGroup wrap(final View target, final ScrollView monitored,
+            final ViewGroup rootView) {
         ViewGroup parent = (ViewGroup) target.getParent();
         int index = parent.indexOfChild(target);
         parent.removeView(target);
+        final int[] dimension = new int[2];
+
         FrameLayout stuffing = new FrameLayout(target.getContext()) {
+            ViewTreeObserver.OnScrollChangedListener mObserver
+                    = new ViewTreeObserver.OnScrollChangedListener() {
+                @Override
+                public void onScrollChanged() {
+                    monitored.getLocationOnScreen(dimension);
+                    int offset = dimension[1];
+                    getLocationOnScreen(dimension);
+                    int top = dimension[1] - offset;
+                    offset(target, top);
+                    if (top < 0 && indexOfChild(target) >= 0) {
+                        removeView(target);
+                        rootView.addView(target);
+                    } else if (top >= 0 && indexOfChild(target) < 0) {
+                        rootView.removeView(target);
+                        addView(target);
+                    }
+                }
+            };
+
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 int widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);
                 int heightSpecSize = MeasureSpec.getSize(heightMeasureSpec);
                 measureChildWithMargins(target, widthMeasureSpec, 0, heightMeasureSpec, 0);
                 setMeasuredDimension(widthSpecSize, heightSpecSize + target.getMeasuredHeight());
+            }
+
+            @Override
+            protected void onAttachedToWindow() {
+                super.onAttachedToWindow();
+                monitored.getViewTreeObserver().addOnScrollChangedListener(mObserver);
+            }
+
+            @Override
+            protected void onDetachedFromWindow() {
+                super.onDetachedFromWindow();
+                monitored.getViewTreeObserver().removeOnScrollChangedListener(mObserver);
             }
         };
         stuffing.addView(target);
@@ -77,30 +111,12 @@ public class ViewSticker {
 
     public static void stick(final View target, final ScrollView monitored,
             final ViewGroup rootView) {
-        final ViewGroup stuffing = wrap(target);
-        final int[] dimension = new int[2];
-        monitored.getViewTreeObserver()
-                .addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-                    @Override
-                    public void onScrollChanged() {
-                        monitored.getLocationOnScreen(dimension);
-                        int offset = dimension[1];
-                        stuffing.getLocationOnScreen(dimension);
-                        int top = dimension[1] - offset;
-                        offset(target, top);
-                        if (top < 0 && stuffing.indexOfChild(target) >= 0) {
-                            stuffing.removeView(target);
-                            rootView.addView(target);
-                        } else if (top >= 0 && stuffing.indexOfChild(target) < 0) {
-                            rootView.removeView(target);
-                            stuffing.addView(target);
-                        }
-                    }
-                });
+        final ViewGroup stuffing = wrap(target, monitored, rootView);
         sObjectMap.put(target, new Closure(target, monitored, stuffing, rootView));
     }
 
-    public static void peeler(final View target, final ScrollView monitored, final ViewGroup rootView){
+    public static void peeler(final View target, final ScrollView monitored,
+            final ViewGroup rootView) {
         //TODO
     }
 }
