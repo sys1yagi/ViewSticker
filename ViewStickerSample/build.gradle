@@ -6,7 +6,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:0.6.+'
     }
 }
-apply plugin: 'android-library'
+apply plugin: 'android'
 
 repositories {
     mavenCentral()
@@ -20,13 +20,9 @@ android {
         minSdkVersion 7
         targetSdkVersion 19
     }
-    release {
-        runProguard false
-        proguardFile 'proguard-rules.txt'
-        proguardFile getDefaultProguardFile('proguard-android.txt')
-    }
 }
 
 dependencies {
     compile 'com.android.support:appcompat-v7:+'
+    compile project(':ViewSticker')
 }

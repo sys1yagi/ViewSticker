@@ -99,4 +99,8 @@ public class ViewSticker {
                 });
         sObjectMap.put(target, new Closure(target, monitored, stuffing, rootView));
     }
+
+    public static void peeler(final View target, final ScrollView monitored, final ViewGroup rootView){
+        //TODO
+    }
 }
