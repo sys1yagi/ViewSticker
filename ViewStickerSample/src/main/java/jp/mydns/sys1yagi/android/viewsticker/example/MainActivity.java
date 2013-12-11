@@ -22,10 +22,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FrameLayout container = (FrameLayout)findViewById(R.id.container);
-        ScrollView scrollView = (ScrollView)findViewById(R.id.scroll_view);
+        ViewSticker sticker = ViewSticker.starch(this, R.id.scroll_view, R.id.container);
 
-        ViewSticker.stick(findViewById(R.id.description_header), scrollView, container);
-        ViewSticker.stick(findViewById(R.id.physical_features_header), scrollView, container);
+        sticker.stick(findViewById(R.id.description_header));
+        sticker.stick(findViewById(R.id.physical_features_header));
     }
 }
