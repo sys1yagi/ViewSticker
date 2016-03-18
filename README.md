@@ -3,7 +3,7 @@ ViewSticker
 
 ViewSticker is Android Library
 
-<img src="https://raw.github.com/sys1yagi/ViewSticker/master/moon.gif" width="250px"/>
+<img src="https://github.com/sys1yagi/ViewSticker/blob/master/moon.gif?raw=true" width="250px"/>
 
 ## Usage
 
